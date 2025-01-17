@@ -6,11 +6,11 @@
 // Project Name: BCD_Counter
 // Target Devices: Basys3
 // Tool Versions: 2023.2
-// Description: The Testbench for the InputStabilizer module
+// Description: The Testbench for the InputSanitizer module
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module InputStabilizerTB ();
+module InputSanitizerTB ();
   // reg/wire declaration
   reg  [3:0] DataIn;
   reg        Clk;

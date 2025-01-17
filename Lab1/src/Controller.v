@@ -28,7 +28,7 @@ module Controller (
       counter <= 18'b0;
     end else begin
       counter <= counter + 1;
-      if(counter[17] == 0) begin
+      if (counter[17] == 0) begin
         an <= 4'b1110;
         selector <= 1'b0;
       end else begin
