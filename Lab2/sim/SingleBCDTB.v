@@ -40,7 +40,7 @@ module SingleBCDTB ();
     input reg [3:0] expected_DataOut;  // Expected output
     input reg expected_Cout;  // Expected output
     begin
-      if (DataOut !== expected_DataOut && Cout !== expected_Cout) begin
+      if (DataOut !== expected_DataOut || Cout !== expected_Cout) begin
         $error("ERROR: TestCaseNo %0d | DataOut = %b (Expected: %b) | Cout = %b (Expected: %b)",
                TestCaseNo, $time, DataOut, expected_DataOut, Cout, expected_Cout);
         flag = 1;

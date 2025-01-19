@@ -43,7 +43,7 @@ module SevenSegmentDisplayTB ();
     input reg [3:0] expected_AN;  // Expected output
     input reg [7:0] expected_Segments;  // Expected output
     begin
-      if (AN !== expected_AN && Segments !== expected_Segments) begin
+      if (AN !== expected_AN || Segments !== expected_Segments) begin
         $error("ERROR: TestCaseNo %0d | AN = %b (Expected: %b) | Segments = %b (Expected: %b)",
                TestCaseNo, $time, AN, expected_AN, Segments, expected_Segments);
         flag = 1;

@@ -39,7 +39,7 @@ module SystemTB ();
     input reg [7:0] expected_Segments;  // Expected output
     input reg [3:0] expected_AN;  // Expected output
     begin
-      if (Segments !== expected_Segments | AN !== expected_AN) begin
+      if (Segments !== expected_Segments || AN !== expected_AN) begin
         $error(
             "ERROR: TestCaseNo %0d | Time = %0t | SW = %b, Reset = %b | Segments = %b (Expected: %b) | AN = %b (Expected: %b)",
             TestCaseNo, $time, SW, Reset, Segments, expected_Segments, AN, expected_AN);

@@ -38,7 +38,7 @@ module SevenSegmentControllerTB ();
     input reg [3:0] expected_AN;  // Expected output
     input reg [1:0] expected_Selector;  // Expected output
     begin
-      if (AN !== expected_AN && Selector !== expected_Selector) begin
+      if (AN !== expected_AN || Selector !== expected_Selector) begin
         $error("ERROR: TestCaseNo %0d | AN = %b (Expected: %b) | Selector = %b (Expected: %b)",
                TestCaseNo, $time, AN, expected_AN, Selector, expected_Selector);
         flag = 1;
