@@ -48,8 +48,13 @@ module SinglePulserTB ();
 
   // test cases
   initial begin
+    DataIn = 0;
+    Reset = 0;
+    Clk = 0;
+    #(CLK_PERIOD + 0.1);
+    Reset = 1;
+    check_output(0, 0);
     // Insert test cases here
-    
     if (flag == 0) begin
       $display("All test cases pass");
     end else begin
