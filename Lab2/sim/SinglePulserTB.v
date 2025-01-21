@@ -36,7 +36,7 @@ module SinglePulserTB ();
     input reg expected_DataOut;  // Expected output
     begin
       if (DataOut !== expected_DataOut) begin
-        $error("ERROR: TestCaseNo %0d | DataOut = %b (Expected: %b)", TestCaseNo, $time, DataOut,
+        $error("ERROR: TestCaseNo %0d | Time = %0t | DataOut = %b (Expected: %b)", TestCaseNo, $time, DataOut,
                expected_DataOut);
         flag = 1;
       end
