@@ -1,15 +1,16 @@
 module SingleCycleCPU (
-    input clk,
-    input start,
-    output signed [31:0] r [0:31]
+    input   wire        clk,
+    input   wire        start,
+    output  wire [7:0]  segments,
+    output  wire [3:0]  an
 );
 
 // When input start is zero, cpu should reset
 // When input start is high, cpu start running
 
-// TODO: connect wire to realize SingleCycleCPU
+// TODO: connect wire to realize SingleCycleCPU and instantiate all modules related to seven-segment displays
 // The following provides simple template,
-// you can modify it as you wish except I/O pin and register module
+// you can modify it as you wish except I/O pin, register module, and memory module
 
 PC m_PC(
     .clk(),
@@ -40,8 +41,9 @@ Control m_Control(
     .regWrite()
 );
 
+// ------------------------------------------
 // For Student: 
-// Do not change the Register instance name!
+// Do not change the modules' instance names!
 // Or you will fail validation.
 
 Register m_Register(
@@ -53,13 +55,21 @@ Register m_Register(
     .writeReg(),
     .writeData(),
     .readData1(),
-    .readData2()
+    .readData2(),
+    .reg5Data()
 );
 
-// ======= for validation ======= 
-// == Dont change this section ==
-assign r = m_Register.regs;
-// ======= for vaildation =======
+DataMemory m_DataMemory(
+    .rst(start),
+    .clk(),
+    .memWrite(),
+    .memRead(),
+    .address(),
+    .writeData(),
+    .readData()
+);
+
+// ------------------------------------------
 
 ImmGen m_ImmGen(
     .inst(),
@@ -104,16 +114,6 @@ ALU m_ALU(
     .B(),
     .ALUOut(),
     .zero()
-);
-
-DataMemory m_DataMemory(
-    .rst(start),
-    .clk(),
-    .memWrite(),
-    .memRead(),
-    .address(),
-    .writeData(),
-    .readData()
 );
 
 Mux2to1 #(.size(32)) m_Mux_WriteData(

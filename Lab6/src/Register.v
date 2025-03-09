@@ -10,13 +10,16 @@ module Register (
     input [4:0] writeReg,
     input [31:0] writeData,
     output [31:0] readData1,
-    output [31:0] readData2
+    output [31:0] readData2,
+    output [31:0] reg5Data
 );
     reg [31:0] regs [0:31];
 
 
     assign readData1 = regs[readReg1];
     assign readData2 = regs[readReg2];
+    
+    assign reg5Data = regs[5];
      
     always @(negedge clk, negedge rst) begin
         if(~rst) begin
