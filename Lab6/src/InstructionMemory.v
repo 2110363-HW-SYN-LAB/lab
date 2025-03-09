@@ -18,7 +18,9 @@ module InstructionMemory (
         insts[20] = 8'b0; insts[21] = 8'b0; insts[22] = 8'b0; insts[23] = 8'b0;
         insts[24] = 8'b0; insts[25] = 8'b0; insts[26] = 8'b0; insts[27] = 8'b0;
         insts[28] = 8'b0; insts[29] = 8'b0; insts[30] = 8'b0; insts[31] = 8'b0;
-        $readmemb("TEST_INSTRUCTIONS.txt", insts);
+
+        // You may want to change the name of the file to read
+        $readmemb("EXAMPLE_INSTRUCTIONS.txt", insts);
     end
 
 endmodule
