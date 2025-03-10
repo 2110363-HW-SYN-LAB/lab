@@ -1,11 +1,11 @@
 module DataMemory(
-	input rst,
-	input clk,
-	input memWrite,
-	input memRead,
-	input [31:0] address,
-	input [31:0] writeData,
-	output reg [31:0] readData
+	input rst,					// Active low reset
+	input clk,					// Clock
+	input memWrite,				// Memory write signal
+	input memRead,				// Memory read signal
+	input [31:0] address,		// Address that is read or written
+	input [31:0] writeData,		// Data to be written
+	output reg [31:0] readData	// Data that is read
 );
 	// For Student: 
 	// Do not modify this file!

@@ -7,7 +7,7 @@ module Adder (
     // The module is useful when accumulating PC (Program Counter)
 
     // TODO: implement your Adder here
-    // Hint: you can use operator to implement
+    // Hint: you can use operator to implement (just add it)
 
 
 endmodule

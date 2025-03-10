@@ -2,16 +2,16 @@
 // Do not modify this file!
 
 module Register (
-    input clk,
-    input rst,
-    input regWrite,
-    input [4:0] readReg1,
-    input [4:0] readReg2,
-    input [4:0] writeReg,
-    input [31:0] writeData,
-    output [31:0] readData1,
-    output [31:0] readData2,
-    output [31:0] reg5Data
+    input clk,                  // Clock
+    input rst,                  // Active low reset
+    input regWrite,             // Register write signal
+    input [4:0] readReg1,       // Specify register to read (port 1)
+    input [4:0] readReg2,       // Specify register to read (port 2)
+    input [4:0] writeReg,       // Specify register to write
+    input [31:0] writeData,     // Value to write to register
+    output [31:0] readData1,    // Value of register at port 1
+    output [31:0] readData2,    // Value of register at port 2
+    output [31:0] reg5Data      // Value of register 5 (for seven-segment display)
 );
     reg [31:0] regs [0:31];
 

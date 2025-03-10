@@ -1,12 +1,13 @@
 module Control (
-    input [6:0] opcode,
-    output reg branch,
-    output reg memRead,
-    output reg memtoReg,
-    output reg [1:0] ALUOp,
-    output reg memWrite,
-    output reg ALUSrc,
-    output reg regWrite
+    input [6:0] opcode,         // opcode field of instruction
+    output reg memRead,         // memory read signal
+    output reg [1:0] memtoReg,  // memory to register signal
+    output reg [2:0] ALUOp,     // ALU operation signal
+    output reg memWrite,        // memory write signal
+    output reg ALUSrc1,         // ALU source 1 signal (for MUX)
+    output reg ALUSrc2,         // ALU source 2 signal (for MUX)
+    output reg regWrite,        // register write signal
+    output reg PCSel            // PC select signal (for MUX PC)
 );
 
     // TODO: implement your Control here

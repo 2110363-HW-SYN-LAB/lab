@@ -1,7 +1,6 @@
 module ImmGen (
-    /* verilator lint_off UNUSEDSIGNAL */
-    input [31:0] inst,
-    output reg signed [31:0] imm
+    input [31:0] inst,                  // instruction
+    output reg signed [31:0] imm        // imm value (output)
 );
     // ImmGen generate imm value base opcode
 
@@ -10,6 +9,7 @@ module ImmGen (
         case(opcode)
             // TODO: implement your ImmGen here
             // Hint: follow the RV32I opcode map (table in spec) to set imm value
+            
             
         endcase
     end

@@ -1,6 +1,6 @@
 module InstructionMemory (
-    input [31:0] readAddr,
-    output [31:0] inst
+    input [31:0] readAddr,      // Address to read (usually is PC)
+    output [31:0] inst          // Instruction that is read
 );
     // For Student: 
     // Do not modify this file!

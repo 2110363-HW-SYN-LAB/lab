@@ -8,9 +8,8 @@ module SingleCycleCPU (
 // When input start is zero, cpu should reset
 // When input start is high, cpu start running
 
-// TODO: connect wire to realize SingleCycleCPU and instantiate all modules related to seven-segment displays
+// TODO: Connect wires to realize SingleCycleCPU and instantiate all modules related to seven-segment displays
 // The following provides simple template,
-// you can modify it as you wish except I/O pin, register module, and memory module
 
 PC m_PC(
     .clk(),
@@ -32,19 +31,21 @@ InstructionMemory m_InstMem(
 
 Control m_Control(
     .opcode(),
-    .branch(),
     .memRead(),
     .memtoReg(),
     .ALUOp(),
     .memWrite(),
-    .ALUSrc(),
-    .regWrite()
+    .ALUSrc1(),
+    .ALUSrc2(),
+    .regWrite(),
+    .PCSel()
 );
 
 // ------------------------------------------
-// For Student: 
-// Do not change the modules' instance names!
+// For Student:
+// Do not change the modules' instance names and I/O port names!!
 // Or you will fail validation.
+// By the way, you still have to wire up these modules
 
 Register m_Register(
     .clk(),
@@ -76,17 +77,6 @@ ImmGen m_ImmGen(
     .imm()
 );
 
-ShiftLeftOne m_ShiftLeftOne(
-    .i(),
-    .o()
-);
-
-Adder m_Adder_2(
-    .a(),
-    .b(),
-    .sum()
-);
-
 Mux2to1 #(.size(32)) m_Mux_PC(
     .sel(),
     .s0(),
@@ -94,7 +84,14 @@ Mux2to1 #(.size(32)) m_Mux_PC(
     .out()
 );
 
-Mux2to1 #(.size(32)) m_Mux_ALU(
+Mux2to1 #(.size(32)) m_Mux_ALU_1(
+    .sel(),
+    .s0(),
+    .s1(),
+    .out()
+);
+
+Mux2to1 #(.size(32)) m_Mux_ALU_2(
     .sel(),
     .s0(),
     .s1(),
@@ -110,17 +107,26 @@ ALUCtrl m_ALUCtrl(
 
 ALU m_ALU(
     .ALUctl(),
+    .brLt(),
+    .brEq(),
     .A(),
     .B(),
-    .ALUOut(),
-    .zero()
+    .ALUOut()
 );
 
-Mux2to1 #(.size(32)) m_Mux_WriteData(
+Mux3to1 #(.size(32)) m_Mux_WriteData(
     .sel(),
     .s0(),
     .s1(),
+    .s2(),
     .out()
+);
+
+BranchComp m_BranchComp(
+    .rs1(),
+    .rs2(),
+    .brLt(),
+    .brEq()
 );
 
 endmodule
