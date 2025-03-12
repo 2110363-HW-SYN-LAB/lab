@@ -181,7 +181,7 @@ async def TestTB(dut):
     # create the clock
     cocotb.start_soon(Clock(dut.clk, 10, units="ns").start())
     # create the CPU
-    virtual_cpu = CPU("../src/EXAMPLE_INSTRUCTIONS.mem")
+    virtual_cpu = CPU("../src/EXAMPLE_INSTRUCTIONS.txt")
     # reset
     dut.start.value = 0
     virtual_cpu.reset()
