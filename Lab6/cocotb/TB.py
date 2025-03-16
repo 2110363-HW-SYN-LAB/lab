@@ -9,7 +9,7 @@ class CPU:
         self.registers = [0] * 32
         self.memory = [0] * 128
         self.instruction_memory = self.load_instruction_memory(instruction_file_name)
-        self.instruction_count = len(self.instruction_memory)
+        self.instruction_count = len(self.instruction_memory)/4
 
     def load_instruction_memory(self, instruction_file_name):
         with open(instruction_file_name, "r") as f:
@@ -45,7 +45,7 @@ class CPU:
         # check registers value
         for i in range(32):
             # print(
-            #     "debug value",
+            #     "debug register value",
             #     i,
             #     dut.m_Register.regs[i].value,
             #     self.registers[i],
@@ -55,9 +55,7 @@ class CPU:
             )
         # check memory value
         for i in range(128):
-            assert dut.m_DataMemory.data_memory[
-                i
-            ].value == self.convert_int_to_2scomplement(self.memory[i])
+            assert dut.m_DataMemory.data_memory[i].value == self.memory[i]
 
     def execute_one_instruction(self):
         if self.pc >= self.instruction_count:
@@ -115,11 +113,15 @@ class CPU:
                 )
             elif funct3 == 0x7:
                 # ANDI Function
-                self.registers[rd] = self.registers[rs1] & self.convert_immediate_to_int(imm, 12)
-                
+                self.registers[rd] = self.registers[
+                    rs1
+                ] & self.convert_immediate_to_int(imm, 12)
+
             elif funct3 == 0x6:
                 # ORI Function
-                self.registers[rd] = self.registers[rs1] | self.convert_immediate_to_int(imm, 12)
+                self.registers[rd] = self.registers[
+                    rs1
+                ] | self.convert_immediate_to_int(imm, 12)
             elif funct3 == 0x2:
                 # SLTI Function
                 if self.registers[rs1] < self.convert_immediate_to_int(imm, 12):
@@ -134,17 +136,31 @@ class CPU:
             funct3 = (instruction >> 12) & 0x7
             rs1 = (instruction >> 15) & 0x1F
             # LW Function
-            self.registers[rd] = self.memory[
+            data_to_load = self.memory[
                 self.registers[rs1] + self.convert_immediate_to_int(imm, 12)
             ]
+            data_to_load |= self.memory[
+                self.registers[rs1] + self.convert_immediate_to_int(imm, 12) + 1
+            ] << 8
+            data_to_load |= self.memory[
+                self.registers[rs1] + self.convert_immediate_to_int(imm, 12) + 2
+            ] << 16
+            data_to_load |= self.memory[
+                self.registers[rs1] + self.convert_immediate_to_int(imm, 12) + 3
+            ] << 24
+            self.registers[rd] = self.convert_immediate_to_int(data_to_load, 32)
             self.pc += 4
         elif opcode == 0x23:
             # S-type Store
-            offset = (instruction >> 25) << 5 | (instruction >> 7) & 0x1F
+            offset = self.convert_immediate_to_int((instruction >> 25) << 5 | (instruction >> 7) & 0x1F,12)
             rs1 = (instruction >> 15) & 0x1F
             rs2 = (instruction >> 20) & 0x1F
             # SW Function
-            self.memory[self.registers[rs1] + offset] = self.registers[rs2]
+            data_to_store = self.convert_int_to_2scomplement(self.registers[rs2])
+            self.memory[self.registers[rs1] + offset] = data_to_store & 0xFF
+            self.memory[self.registers[rs1] + offset + 1] = (data_to_store >> 8) & 0xFF
+            self.memory[self.registers[rs1] + offset + 2] = (data_to_store >> 16) & 0xFF
+            self.memory[self.registers[rs1] + offset + 3] = (data_to_store >> 24) & 0xFF
             self.pc += 4
         elif opcode == 0x63:
             # B-type
@@ -200,15 +216,15 @@ class CPU:
             rs1 = (instruction >> 15) & 0x1F
             # JALR Function
             self.registers[rd] = self.pc + 4
-            self.pc = (self.registers[rs1] + imm) & 0xFFFFFFFE
+            self.pc = (self.registers[rs1] + self.convert_immediate_to_int(imm,12)) & 0xFFFFFFFE
         self.registers[0] = 0
         return True
 
 
 @cocotb.test()
 async def TestTB(dut):
-    # set timeout
-    program_running_limit = 10000
+    # set timeout in case infinite loop
+    program_running_limit = 1000
     """Try accessing the design."""
     dut._log.info("Running test!")
     # create the clock
