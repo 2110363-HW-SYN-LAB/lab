@@ -129,4 +129,11 @@ BranchComp m_BranchComp(
     .brEq()
 );
 
+`ifdef COCOTB_SIM
+  initial begin
+    $dumpfile("waveform.vcd");  // Name of the dump file
+    $dumpvars(0, SingleCycleCPU);  // Dump all variables for the top module
+  end
+`endif
+
 endmodule
