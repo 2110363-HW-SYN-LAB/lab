@@ -2,24 +2,21 @@ import cocotb
 from cocotb.triggers import Timer
 from cocotb.clock import Clock
 
-
 class CPU:
-    def __init__(self, instruction_file_name):
+    def __init__(self):
         self.pc = 0
         self.registers = [0] * 32
         self.memory = [0] * 128
-        self.instruction_memory = self.load_instruction_memory(instruction_file_name)
-        self.instruction_count = len(self.instruction_memory)/4
-
-    def load_instruction_memory(self, instruction_file_name):
-        with open(instruction_file_name, "r") as f:
-            return [int(line.strip(), 2) for line in f.readlines()]
-
-    def reset(self):
-        self.pc = 0
-        self.registers = [0] * 32
-        self.memory = [0] * 128
+        self.instruction_memory = [0] * 128
+        self.instruction_count = 0
         self.registers[2] = 128
+
+    def load_instruction_memory(self, instruction_file_name, dut):
+        with open(instruction_file_name, "r") as f:
+            self.instruction_memory = [int(line.strip(), 2) for line in f.readlines()]
+        for i in range(len(self.instruction_memory)):
+            dut.m_InstMem.insts[i].value = self.instruction_memory[i]
+        self.instruction_count = len(self.instruction_memory)
 
     def fetch_instruction(self):
         return (
@@ -58,11 +55,14 @@ class CPU:
             assert dut.m_DataMemory.data_memory[i].value == self.memory[i]
 
     def execute_one_instruction(self):
+
         if self.pc >= self.instruction_count:
             # end of program
             return False
+
         # fetch instruction
         instruction = self.fetch_instruction()
+
         # execute instruction
         opcode = instruction & 0x7F
         if opcode == 0x33:
@@ -139,20 +139,31 @@ class CPU:
             data_to_load = self.memory[
                 self.registers[rs1] + self.convert_immediate_to_int(imm, 12)
             ]
-            data_to_load |= self.memory[
-                self.registers[rs1] + self.convert_immediate_to_int(imm, 12) + 1
-            ] << 8
-            data_to_load |= self.memory[
-                self.registers[rs1] + self.convert_immediate_to_int(imm, 12) + 2
-            ] << 16
-            data_to_load |= self.memory[
-                self.registers[rs1] + self.convert_immediate_to_int(imm, 12) + 3
-            ] << 24
+            data_to_load |= (
+                self.memory[
+                    self.registers[rs1] + self.convert_immediate_to_int(imm, 12) + 1
+                ]
+                << 8
+            )
+            data_to_load |= (
+                self.memory[
+                    self.registers[rs1] + self.convert_immediate_to_int(imm, 12) + 2
+                ]
+                << 16
+            )
+            data_to_load |= (
+                self.memory[
+                    self.registers[rs1] + self.convert_immediate_to_int(imm, 12) + 3
+                ]
+                << 24
+            )
             self.registers[rd] = self.convert_immediate_to_int(data_to_load, 32)
             self.pc += 4
         elif opcode == 0x23:
             # S-type Store
-            offset = self.convert_immediate_to_int((instruction >> 25) << 5 | (instruction >> 7) & 0x1F,12)
+            offset = self.convert_immediate_to_int(
+                (instruction >> 25) << 5 | (instruction >> 7) & 0x1F, 12
+            )
             rs1 = (instruction >> 15) & 0x1F
             rs2 = (instruction >> 20) & 0x1F
             # SW Function
@@ -216,24 +227,28 @@ class CPU:
             rs1 = (instruction >> 15) & 0x1F
             # JALR Function
             self.registers[rd] = self.pc + 4
-            self.pc = (self.registers[rs1] + self.convert_immediate_to_int(imm,12)) & 0xFFFFFFFE
+            self.pc = (
+                self.registers[rs1] + self.convert_immediate_to_int(imm, 12)
+            ) & 0xFFFFFFFE
+        elif instruction == 0x0:
+            # NOP
+            self.pc += 4
         self.registers[0] = 0
         return True
 
-
-@cocotb.test()
-async def TestTB(dut):
-    # set timeout in case infinite loop
-    program_running_limit = 1000
+async def run_testcase(dut, testcase_filename):
+    # set timeout in case of infinite loop
+    program_running_limit = 10000
     """Try accessing the design."""
-    dut._log.info("Running test!")
     # create the clock
     cocotb.start_soon(Clock(dut.clk, 10, units="ns").start())
     # create the CPU
-    virtual_cpu = CPU("../src/EXAMPLE_INSTRUCTIONS.mem")
+    virtual_cpu = CPU()
+    # load instruction memory
+    virtual_cpu.load_instruction_memory(testcase_filename, dut)
+    dut._log.info("Running test from file: " + testcase_filename)
     # reset
     dut.start.value = 0
-    virtual_cpu.reset()
     await Timer(15, units="ns")
     dut.start.value = 1
     virtual_cpu.check_result(dut)
@@ -246,3 +261,34 @@ async def TestTB(dut):
         program_running_limit -= 1
     dut._log.info("Test Complete")
 
+@cocotb.test()
+async def Testcase01(dut):
+    await run_testcase(dut, "./testcases/testcase_01.txt")
+
+@cocotb.test()
+async def Testcase02(dut):
+    await run_testcase(dut, "./testcases/testcase_02.txt")
+
+@cocotb.test()
+async def Testcase03(dut):
+    await run_testcase(dut, "./testcases/testcase_03.txt")
+
+@cocotb.test()
+async def Testcase04(dut):
+    await run_testcase(dut, "./testcases/testcase_04.txt")
+
+@cocotb.test()
+async def Testcase05(dut):
+    await run_testcase(dut, "./testcases/testcase_05.txt")
+
+@cocotb.test()
+async def Testcase06(dut):
+    await run_testcase(dut, "./testcases/testcase_06.txt")
+
+@cocotb.test()
+async def Testcase07(dut):
+    await run_testcase(dut, "./testcases/testcase_07.txt")
+
+@cocotb.test()
+async def Testcase08(dut):
+    await run_testcase(dut, "./testcases/testcase_08.txt")
