@@ -8,3 +8,11 @@ slt x11, x6, x7
 slt x12, x7, x6
 slt x13, x7, x8
 slt x14, x8, x7
+slti x15, x5, 55
+slti x16, x5, 43
+slti x17, x5, 10
+slti x18, x5, -2
+slti x19, x7, 20
+slti x20, x7, -3
+slti x21, x7, -10
+slti x22, x7, -11
