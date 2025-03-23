@@ -1,0 +1,19 @@
+`timescale 1ns / 1ps
+
+//////////////////////////////////////////////////////////////////////////////////
+
+// This faulty module showcases an error message
+// The error is cause by assigning a value to a wire in always block
+
+//////////////////////////////////////////////////////////////////////////////////
+
+module module3 (
+    input  wire a,
+    output wire b
+);
+
+  always @(*) begin
+    b = a;
+  end
+
+endmodule
